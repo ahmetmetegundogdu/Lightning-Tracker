@@ -55,10 +55,14 @@ class ligthnings_RV : AppCompatActivity() {
         val adapter= RVAdapter(dataList){data ->
             val lat=data.latitude
             val lon=data.longitude
-            val uri= Uri.parse("geo:$lat,$lon")
+            val label="Flash Point"
+            val uri= Uri.parse("geo:$lat,$lon?q=$lat,$lon($label)")
             val mapsIntent= Intent(Intent.ACTION_VIEW,uri)
-            mapsIntent.setPackage("com.google.android.apps.maps")
-            startActivity(mapsIntent)
+            if (mapsIntent.resolveActivity(packageManager)!=null){
+                mapsIntent.setPackage("com.google.android.apps.maps")
+                startActivity(mapsIntent)
+            }
+
         }
         recyclerView.adapter=adapter
         Log.d("Info","RecyclerView kuruldu.")
