@@ -1,0 +1,17 @@
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+--- a/app/src/main/AndroidManifest.xml
++++ b/app/src/main/AndroidManifest.xml	(date 1770588488083)
+@@ -4,7 +4,7 @@
+     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+     <queries>
+-        <package name="com.google.android.apps.maps" />
++        <package android:name="com.google.android.apps.maps" />
+     </queries>
+ 
+     <application

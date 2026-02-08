@@ -3,6 +3,7 @@ package com.gnd.flashtracker
 import android.content.Context
 import android.content.Intent
 import android.location.Geocoder
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -52,6 +53,12 @@ class ligthnings_RV : AppCompatActivity() {
     private fun connectToWebSocket() {
         dataList=mutableListOf()
         val adapter= RVAdapter(dataList){data ->
+            val lat=data.latitude
+            val lon=data.longitude
+            val uri= Uri.parse("geo:$lat,$lon")
+            val mapsIntent= Intent(Intent.ACTION_VIEW,uri)
+            mapsIntent.setPackage("com.google.android.apps.maps")
+            startActivity(mapsIntent)
         }
         recyclerView.adapter=adapter
         Log.d("Info","RecyclerView kuruldu.")

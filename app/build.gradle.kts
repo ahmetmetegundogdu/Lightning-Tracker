@@ -46,16 +46,13 @@ dependencies {
     implementation(composeBom)
     androidTestImplementation(composeBom)
 
-    // Temel Kütüphaneler
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3") // Material 3 candır
 
-    // Aktivite entegrasyonu için
     implementation("androidx.activity:activity-compose:1.10.0")
 
-    // Debug araçları
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
