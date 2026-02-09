@@ -102,7 +102,6 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
     fun getCurrentLocationWithPermission(){
-        //Konum çekme izni var mı yok mu kontrol et. Eğer yoksa talep et.
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(this,arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),100)
             return
