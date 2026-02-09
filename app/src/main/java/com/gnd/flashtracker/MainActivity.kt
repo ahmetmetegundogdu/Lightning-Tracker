@@ -88,11 +88,7 @@ class MainActivity : AppCompatActivity() {
                 3->sendToIntent(38.423733,27.142826)//Izmir
                 4->sendToIntent(41.28667,36.33)//Samsun
                 5->getAllFlashes()
-
             }
-
-
-
         }
     }
     fun getAllFlashes(){
@@ -128,7 +124,6 @@ class MainActivity : AppCompatActivity() {
 
             }
         }
-
     }
     fun sendToIntent(lat: Double, lng: Double){
         val intent= Intent(this, ligthnings_RV::class.java)

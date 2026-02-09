@@ -26,7 +26,11 @@ class RVAdapter(var itemList: MutableList<Data>, val listAllFlashes: Boolean, pr
             holder.rvLatitude.setText("Lightning detected "+"%.2f".format(Locale.US, currentData.distance) + " km away.")
 
         }else{
-            holder.rvLatitude.setText("Lightning detected LAT:${currentData.latitude}")
+            holder.rvLatitude.text = "Lightning detected \nLat: %.4f \nLon: %.4f".format(
+                currentData.latitude.toDouble(),
+                currentData.longitude.toDouble()
+            )
+
         }
         holder.itemView.setOnClickListener { onItemClick(currentData) }
     }
