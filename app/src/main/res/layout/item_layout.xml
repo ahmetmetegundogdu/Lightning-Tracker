@@ -1,35 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="80dp"
+    android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center_vertical"
     android:background="@drawable/item_layout_design"
-    android:layout_marginBottom="10dp"
-    >
-
-    <ImageView
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:src="@drawable/flash"/>
+    android:layout_marginTop="5dp"
+    android:layout_marginBottom="5dp"
+    android:padding="10dp"> <ImageView
+    android:layout_width="60dp"
+    android:layout_height="60dp"
+    android:src="@drawable/flash"/>
 
     <LinearLayout
-        android:layout_width="249dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="10dp"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/distanceView"
-            android:layout_width="wrap_content"
-            android:layout_height="60dp"
-            android:gravity="center_vertical"
-            android:text="Distance:"
-            android:textSize="25dp" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Info:"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
-
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Tap to view the lightning location on the map."
+            android:textSize="12sp"
+            android:textColor="#80000000"/>
 
     </LinearLayout>
-
-
 
 </LinearLayout>

@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:gravity="center"
@@ -16,14 +19,15 @@
         android:background="@drawable/specialedittext"
         android:layout_marginBottom="50dp"
          />
+
     <EditText
         android:id="@+id/input_range"
         android:layout_width="200dp"
         android:layout_height="50dp"
-        android:hint="Enter range"
-        android:text="100"
+        android:layout_marginBottom="30dp"
         android:background="@drawable/specialedittext"
-        android:layout_marginBottom="30dp"/>
+        android:hint="Enter range"
+        tools:inputType="number" />
     <Button
         android:id="@+id/find_button"
         android:layout_width="wrap_content"
@@ -38,3 +42,4 @@
         android:gravity="center"/>
 
 </LinearLayout>
+

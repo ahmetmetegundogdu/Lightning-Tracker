@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Locale
 
-class RVAdapter(var itemList: MutableList<Data>,private val onItemClick:(Data)-> Unit): RecyclerView.Adapter<RVAdapter.RVViewHolder>() {
+class RVAdapter(var itemList: MutableList<Data>, val listAllFlashes: Boolean, private val onItemClick:(Data)-> Unit): RecyclerView.Adapter<RVAdapter.RVViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -21,7 +21,13 @@ class RVAdapter(var itemList: MutableList<Data>,private val onItemClick:(Data)->
         position: Int
     ) {
         val currentData=itemList[position]
-        holder.rvLatitude.setText("Lightning detected "+"%.2f".format(Locale.US, currentData.distance) + " km away.")
+
+        if(!listAllFlashes){
+            holder.rvLatitude.setText("Lightning detected "+"%.2f".format(Locale.US, currentData.distance) + " km away.")
+
+        }else{
+            holder.rvLatitude.setText("Lightning detected LAT:${currentData.latitude}")
+        }
         holder.itemView.setOnClickListener { onItemClick(currentData) }
     }
 
