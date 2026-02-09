@@ -31,6 +31,7 @@ class ligthnings_RV : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private var webSocket: WebSocket? = null
     private var range: Int=100
+    private var listAllFlashes: Boolean=false
     private lateinit var dataList: MutableList<Data>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,14 +46,14 @@ class ligthnings_RV : AppCompatActivity() {
         recyclerView.layoutManager= LinearLayoutManager(this)
         Log.d("s","aaaa")
         range= intent.getIntExtra("range",100)
-
+        listAllFlashes=intent.getBooleanExtra("listAllFlashes",false)
 
         connectToWebSocket()
     }
 
     private fun connectToWebSocket() {
         dataList=mutableListOf()
-        val adapter= RVAdapter(dataList){data ->
+        val adapter= RVAdapter(dataList,listAllFlashes){data ->
             val lat=data.latitude
             val lon=data.longitude
             val label="Flash Point"
@@ -99,16 +100,24 @@ class ligthnings_RV : AppCompatActivity() {
                             if (lat != 0.0 && lon != 0.0) {
 
                                 Log.d("WebSocket", "Yıldırım Düştü: $lat, $lon")
-                                val distance=calculateDistance(lat,lon)
-                                Log.d("Distance:",distance.toString())
-                                Log.d("Range:",range.toString())
-                                if(range.toDouble()>=distance){
-                                    val data= Data(lat.toString(),lon.toString(),distance)
+                                if(!listAllFlashes){
+                                    val distance=calculateDistance(lat,lon)
+                                    Log.d("Distance:",distance.toString())
+                                    Log.d("Range:",range.toString())
+                                    if(range.toDouble()>=distance){
+                                        val data= Data(lat.toString(),lon.toString(),distance)
+                                        dataList.addFirst(data)
+                                        val address=getAddress(baseContext,lat,lon)
+                                        Log.d("Adress:",address)
+                                        adapter.notifyDataSetChanged()
+                                    }
+                                }else{
+                                    val data= Data(lat.toString(),lon.toString())
                                     dataList.addFirst(data)
-                                    val address=getAddress(baseContext,lat,lon)
-                                    Log.d("Adress:",address)
                                     adapter.notifyDataSetChanged()
+
                                 }
+
 
 
 

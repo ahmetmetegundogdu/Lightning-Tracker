@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     lateinit var coordinates_list: MutableList<Int>
 
-    var location_list=listOf("Current Location","Ankara","Istanbul","Izmir","Samsun")//0,1,2,3,4
+    var location_list=listOf("Current Location","Ankara","Istanbul","Izmir","Samsun","All lightning events on the world.")//0,1,2,3,4
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -58,6 +58,16 @@ class MainActivity : AppCompatActivity() {
                 id: Long
             ) {
                 selectedItem=position
+                if (position==5){
+                    inputRange.visibility= View.GONE
+                    findButton.setText("List All Flashes")
+
+                }else{
+                    inputRange.visibility= View.VISIBLE
+                    findButton.setText("Find Flashes")
+
+
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -76,12 +86,19 @@ class MainActivity : AppCompatActivity() {
                 2->sendToIntent(41.015137,28.979530)//Istanbul
                 3->sendToIntent(38.423733,27.142826)//Izmir
                 4->sendToIntent(41.28667,36.33)//Samsun
+                5->getAllFlashes()
 
             }
 
 
 
         }
+    }
+    fun getAllFlashes(){
+        val intent= Intent(this, ligthnings_RV::class.java)
+        val listAllFlashes=true
+        intent.putExtra("listAllFlashes",listAllFlashes)
+        startActivity(intent)
     }
     fun getCurrentLocationWithPermission(){
         //Konum çekme izni var mı yok mu kontrol et. Eğer yoksa talep et.
@@ -119,6 +136,8 @@ class MainActivity : AppCompatActivity() {
         intent.putExtra("longitude",lng)
         val range=inputRange.text.toString()
         intent.putExtra("range",range.toInt())
+        val listAllFlashes=false
+        intent.putExtra("listAllFlashes",listAllFlashes)
         startActivity(intent)
     }
     override fun onRequestPermissionsResult(
