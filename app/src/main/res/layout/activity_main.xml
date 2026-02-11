@@ -10,26 +10,63 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:background="@color/freeze_white">
+    android:background="@drawable/main_background">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_marginBottom="50dp">
+        <ImageView
+            android:id="@+id/weatherIcon"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            />
+        <TextView
+            android:id="@+id/degreeText"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:textSize="35sp"
+            android:textColor="@color/freeze_white"
+            android:textStyle="bold"
+            android:text=""
+            />
+        <TextView
+            android:id="@+id/weatherInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:textSize="15sp"
+            android:textColor="@color/freeze_white"
+            android:textStyle="bold"
+            android:text="Getting info..."
+            />
+
+
+
+    </LinearLayout>
 
     <Spinner
         android:id="@+id/location_spinner"
         android:layout_width="200dp"
         android:layout_height="50dp"
-        android:background="@drawable/specialedittext"
+        android:background="@drawable/transparent_bg"
         android:layout_marginBottom="50dp"
-         />
+        android:textColor="#353538"
+
+        />
 
     <EditText
         android:id="@+id/input_range"
         android:layout_width="200dp"
         android:layout_height="50dp"
         android:layout_marginBottom="30dp"
-        android:background="@drawable/specialedittext"
+        android:textColor="#353538"
+        android:textColorHint="#68686B"
+        android:background="@drawable/transparent_bg"
         android:hint="Enter range (km)"
         tools:inputType="number" />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/find_button"
         android:layout_width="wrap_content"
         android:layout_height="48dp"
