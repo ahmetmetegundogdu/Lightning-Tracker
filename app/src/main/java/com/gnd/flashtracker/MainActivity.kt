@@ -1,8 +1,10 @@
 package com.gnd.flashtracker
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -31,6 +33,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.Locale
 import kotlin.properties.Delegates
 
 class MainActivity : AppCompatActivity() {
@@ -43,7 +46,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var weatherInfoText: TextView
     lateinit var degreeText: TextView
     lateinit var weatherIcon: ImageView
-
+    lateinit var location_info: TextView
 
     // sonra düzeltcem
     var latitude: Double=0.0
@@ -77,6 +80,7 @@ class MainActivity : AppCompatActivity() {
         weatherIcon=findViewById(R.id.weatherIcon)
         weatherInfoText=findViewById(R.id.weatherInfo)
         degreeText=findViewById(R.id.degreeText)
+        location_info=findViewById(R.id.location_info)
         getCurrentLocationWithPermission()
 
 
@@ -191,6 +195,8 @@ class MainActivity : AppCompatActivity() {
                         crossfade(true)
                         placeholder(R.drawable.loading)
                     }
+                    val location=weather?.location?.name+"\n"+weather?.location?.country
+                    location_info.setText(location)
                 }
             }
 
@@ -225,5 +231,6 @@ class MainActivity : AppCompatActivity() {
             getCurrentLocationWithPermission()
         }
     }
+
 
 }
