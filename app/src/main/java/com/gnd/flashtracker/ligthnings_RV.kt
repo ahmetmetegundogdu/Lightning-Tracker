@@ -14,6 +14,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import android.os.Handler
 import android.os.Looper
+import android.view.WindowManager
 import androidx.activity.addCallback
 
 import androidx.annotation.RequiresApi
@@ -30,7 +31,8 @@ class ligthnings_RV : AppCompatActivity() {
     lateinit var latitudeText: TextView
     lateinit var longitudeText: TextView
 
-    private var newCon: Boolean = false
+    private var firstCon: Boolean = true
+    private var newCon: Boolean = true
     private var currentTime: Long = 0
     private val client = OkHttpClient()
     private lateinit var recyclerView: RecyclerView
@@ -38,8 +40,10 @@ class ligthnings_RV : AppCompatActivity() {
     private var range: Int=1000000
     private var listAllFlashes: Boolean=false
     private lateinit var dataList: MutableList<Data>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         enableEdgeToEdge()
         setContentView(R.layout.activity_ligthnings_rv)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -52,15 +56,6 @@ class ligthnings_RV : AppCompatActivity() {
         range= intent.getIntExtra("range",1000000)
         listAllFlashes=intent.getBooleanExtra("listAllFlashes",false)
 
-        connectToWebSocket()
-
-        onBackPressedDispatcher.addCallback(this) {
-            webSocket?.close(1000,null)
-            isEnabled = false
-            onBackPressedDispatcher.onBackPressed()
-        }
-    }
-    private fun connectToWebSocket() {
         dataList=mutableListOf()
         val adapter= RVAdapter(dataList,listAllFlashes){data ->
             val lat=data.latitude
@@ -72,11 +67,21 @@ class ligthnings_RV : AppCompatActivity() {
                 mapsIntent.setPackage("com.google.android.apps.maps")
                 startActivity(mapsIntent)
             }
-
         }
+
         recyclerView.adapter=adapter
         recyclerView.itemAnimator = SlideInItemAnimator()
         Log.d("Info","RecyclerView kuruldu.")
+
+        connectToWebSocket()
+
+        onBackPressedDispatcher.addCallback(this) {
+            webSocket?.close(1000,null)
+            isEnabled = false
+            onBackPressedDispatcher.onBackPressed()
+        }
+    }
+    private fun connectToWebSocket() {
 
         val request = Request.Builder()
             .url("wss://ws1.blitzortung.org/") // URL
@@ -94,32 +99,96 @@ class ligthnings_RV : AppCompatActivity() {
             override fun onMessage(webSocket: WebSocket, text: String) {
                 try {
                     val decodedData = decode(text)
-
                     val jsonObject = JSONObject(decodedData)
-
-
                     val lat = jsonObject.optDouble("lat", 0.0)
                     val lon = jsonObject.optDouble("lon", 0.0)
                     val delay = jsonObject.optDouble("delay",-1.0)
                     val time = jsonObject.optLong("time",0)
 
-                    if (newCon){
-                        if (currentTime <= (time -delay*1000000000)){
-                            newCon = false
+                    if (firstCon){
+                        if (newCon){
+                            if (currentTime > (time - delay*1000000000)){
+                                //kırmızı yazdır
+                                runOnUiThread {
+                                    Log.d("WebSocket", "Yıldırım Düştü: $lat, $lon")
+                                    if(!listAllFlashes){
+                                        val distance=calculateDistance(lat,lon)
+                                        Log.d("Distance:",distance.toString())
+                                        Log.d("Range:",range.toString())
+                                        if(range.toDouble()>=distance){
+                                            val data= Data(lat.toString(),lon.toString(),newCon&&firstCon,distance)
+                                            dataList.add(0, data)
+                                            Log.d("newCon:","$newCon")
+                                            recyclerView.adapter?.notifyItemInserted(0)
+                                            val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                                            val firstVisibleItemPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
 
+                                            if (firstVisibleItemPosition == 0 || firstVisibleItemPosition == -1) {
+                                                recyclerView.scrollToPosition(0)
+                                            }
+                                        }
+                                    }else{
+                                        val data= Data(lat.toString(),lon.toString(),newCon)
+                                        dataList.add(0, data)
+                                        recyclerView.adapter?.notifyItemInserted(0)
+                                        val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                                        val firstVisibleItemPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
+                                        Log.d("newCon:","$newCon")
+                                        if (firstVisibleItemPosition == 0 || firstVisibleItemPosition == -1) {
+                                            recyclerView.scrollToPosition(0)
+                                        }
+                                    }
+                                }
+                            }
+                            else{
+                                newCon = false
+                                firstCon = false
+                                //mavi yazdır
+                                runOnUiThread {
+                                    Log.d("WebSocket", "Yıldırım Düştü: $lat, $lon")
+                                    if(!listAllFlashes){
+                                        val distance=calculateDistance(lat,lon)
+                                        Log.d("Distance:",distance.toString())
+                                        Log.d("Range:",range.toString())
+                                        if(range.toDouble()>=distance){
+                                            val data= Data(lat.toString(),lon.toString(),newCon&&firstCon,distance)
+                                            dataList.add(0, data)
+                                            Log.d("newCon:","$newCon")
+                                            recyclerView.adapter?.notifyItemInserted(0)
+                                            val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                                            val firstVisibleItemPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
+
+                                            if (firstVisibleItemPosition == 0 || firstVisibleItemPosition == -1) {
+                                                recyclerView.scrollToPosition(0)
+                                            }
+                                        }
+                                    }else{
+                                        val data= Data(lat.toString(),lon.toString(),newCon)
+                                        dataList.add(0, data)
+                                        recyclerView.adapter?.notifyItemInserted(0)
+                                        val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                                        val firstVisibleItemPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
+                                        Log.d("newCon:","$newCon")
+                                        if (firstVisibleItemPosition == 0 || firstVisibleItemPosition == -1) {
+                                            recyclerView.scrollToPosition(0)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else{
+                            //mavi yazdır
                             runOnUiThread {
-
                                 Log.d("WebSocket", "Yıldırım Düştü: $lat, $lon")
                                 if(!listAllFlashes){
                                     val distance=calculateDistance(lat,lon)
                                     Log.d("Distance:",distance.toString())
                                     Log.d("Range:",range.toString())
                                     if(range.toDouble()>=distance){
-                                        val data= Data(lat.toString(),lon.toString(),distance)
+                                        val data= Data(lat.toString(),lon.toString(),newCon&&firstCon,distance)
                                         dataList.add(0, data)
-                                        val address=getAddress(baseContext,lat,lon)
-                                        Log.d("Adress:",address)
-                                        adapter.notifyItemInserted(0)
+                                        Log.d("newCon:","$newCon")
+                                        recyclerView.adapter?.notifyItemInserted(0)
                                         val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                                         val firstVisibleItemPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
 
@@ -128,53 +197,91 @@ class ligthnings_RV : AppCompatActivity() {
                                         }
                                     }
                                 }else{
-                                    val data= Data(lat.toString(),lon.toString())
+                                    val data= Data(lat.toString(),lon.toString(),newCon)
                                     dataList.add(0, data)
-                                    adapter.notifyItemInserted(0)
+                                    recyclerView.adapter?.notifyItemInserted(0)
                                     val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                                     val firstVisibleItemPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
-
+                                    Log.d("newCon:","$newCon")
                                     if (firstVisibleItemPosition == 0 || firstVisibleItemPosition == -1) {
                                         recyclerView.scrollToPosition(0)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else{
+                        if (newCon){
+                            if (currentTime > (time - delay*1000000000)){
+                                //yazdırma
+                                //bura boş komutanım
+                            }
+                            else{
+                                newCon = false
+                                firstCon = false
+                                //mavi yazdır
+                                runOnUiThread {
+                                    Log.d("WebSocket", "Yıldırım Düştü: $lat, $lon")
+                                    if(!listAllFlashes){
+                                        val distance=calculateDistance(lat,lon)
+                                        Log.d("Distance:",distance.toString())
+                                        Log.d("Range:",range.toString())
+                                        if(range.toDouble()>=distance){
+                                            val data= Data(lat.toString(),lon.toString(),newCon&&firstCon,distance)
+                                            dataList.add(0, data)
+                                            Log.d("newCon:","$newCon")
+                                            recyclerView.adapter?.notifyItemInserted(0)
+                                            val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                                            val firstVisibleItemPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
+
+                                            if (firstVisibleItemPosition == 0 || firstVisibleItemPosition == -1) {
+                                                recyclerView.scrollToPosition(0)
+                                            }
+                                        }
+                                    }else{
+                                        val data= Data(lat.toString(),lon.toString(),newCon)
+                                        dataList.add(0, data)
+                                        recyclerView.adapter?.notifyItemInserted(0)
+                                        val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                                        val firstVisibleItemPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
+                                        Log.d("newCon:","$newCon")
+                                        if (firstVisibleItemPosition == 0 || firstVisibleItemPosition == -1) {
+                                            recyclerView.scrollToPosition(0)
+                                        }
                                     }
                                 }
                             }
                         }
                         else{
-                            Log.d("ignored","$currentTime --- $time")
-                        }
-                    }
-                    else{
-                        runOnUiThread {
+                            //mavi yazdır
+                            runOnUiThread {
+                                Log.d("WebSocket", "Yıldırım Düştü: $lat, $lon")
+                                if(!listAllFlashes){
+                                    val distance=calculateDistance(lat,lon)
+                                    Log.d("Distance:",distance.toString())
+                                    Log.d("Range:",range.toString())
+                                    if(range.toDouble()>=distance){
+                                        val data= Data(lat.toString(),lon.toString(),newCon&&firstCon,distance)
+                                        dataList.add(0, data)
+                                        Log.d("newCon:","$newCon")
+                                        recyclerView.adapter?.notifyItemInserted(0)
+                                        val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                                        val firstVisibleItemPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
 
-                            Log.d("WebSocket", "Yıldırım Düştü: $lat, $lon")
-                            if(!listAllFlashes){
-                                val distance=calculateDistance(lat,lon)
-                                Log.d("Distance:",distance.toString())
-                                Log.d("Range:",range.toString())
-                                if(range.toDouble()>=distance){
-                                    val data= Data(lat.toString(),lon.toString(),distance)
+                                        if (firstVisibleItemPosition == 0 || firstVisibleItemPosition == -1) {
+                                            recyclerView.scrollToPosition(0)
+                                        }
+                                    }
+                                }else{
+                                    val data= Data(lat.toString(),lon.toString(),newCon)
                                     dataList.add(0, data)
-                                    val address=getAddress(baseContext,lat,lon)
-                                    Log.d("Adress:",address)
-                                    adapter.notifyItemInserted(0)
+                                    recyclerView.adapter?.notifyItemInserted(0)
                                     val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                                     val firstVisibleItemPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
-
+                                    Log.d("newCon:","$newCon")
                                     if (firstVisibleItemPosition == 0 || firstVisibleItemPosition == -1) {
                                         recyclerView.scrollToPosition(0)
                                     }
-                                }
-                            }
-                            else{
-                                val data= Data(lat.toString(),lon.toString())
-                                dataList.add(0, data)
-                                adapter.notifyItemInserted(0)
-                                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-                                val firstVisibleItemPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
-
-                                if (firstVisibleItemPosition == 0 || firstVisibleItemPosition == -1) {
-                                    recyclerView.scrollToPosition(0)
                                 }
                             }
                         }
@@ -187,15 +294,17 @@ class ligthnings_RV : AppCompatActivity() {
 
             override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
                 Log.d("WebSocket", "Kapanıyor: $code")
-                webSocket.close(1000, null)
+
                 Handler(Looper.getMainLooper()).postDelayed({
-                    connectToWebSocket()
+                    if (code == 1005){
+                        connectToWebSocket()
+                    }
                 }, 1000)
             }
 
             override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
                 Log.e("WebSocket", "Bağlantı Hatası: ${t.message}")
-                // Hata olursa 3 saniye sonra tekrar dene
+
                 Handler(Looper.getMainLooper()).postDelayed({
                     connectToWebSocket()
                 }, 1000)

@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
                 selectedItem=position
                 if (position==5){
                     inputRange.visibility= View.GONE
-                    findButton.setText("List All Flashes")
+                    findButton.setText("Detect Strikes")
 
                 }else{
                     inputRange.visibility= View.VISIBLE
