@@ -1,8 +1,10 @@
 package com.gnd.flashtracker
 
 import android.Manifest
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.os.Build
@@ -36,6 +38,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.Locale
 import kotlin.properties.Delegates
 
+
 class MainActivity : AppCompatActivity() {
     lateinit var locationSpinner: Spinner
     lateinit var locationSpinnerAdapter: ArrayAdapter<String>
@@ -49,11 +52,12 @@ class MainActivity : AppCompatActivity() {
     lateinit var location_info: TextView
 
     // sonra düzeltcem
+    //düzelt sikmim
     var latitude: Double=0.0
     var longitude: Double=0.0
 
-
     // silmezsek ölürü!!!!!
+    // sil o zaman amk
     val key="8a914d5718194ad0b2d172949261102"
     //
 
@@ -69,6 +73,9 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+
+
         fusedLocationProviderClient= LocationServices.getFusedLocationProviderClient(this)
         var selectedItem:Int=-1
         coordinates_list= mutableListOf()
@@ -83,8 +90,8 @@ class MainActivity : AppCompatActivity() {
         location_info=findViewById(R.id.location_info)
         getCurrentLocationWithPermission()
 
-
-
+        val serviceIntent = Intent(this, WebSocketService::class.java)
+        startService(serviceIntent)
 
         locationSpinner.onItemSelectedListener=object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(
@@ -126,6 +133,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
     fun getAllFlashes(){
         val intent= Intent(this, ligthnings_RV::class.java)
         val listAllFlashes=true
@@ -216,10 +224,10 @@ class MainActivity : AppCompatActivity() {
         intent.putExtra("longitude",lng)
         val range=inputRange.text.toString()
         val value = range.toIntOrNull() ?: 1000000
-
         intent.putExtra("range",value)
         startActivity(intent)
     }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String?>,
@@ -231,6 +239,4 @@ class MainActivity : AppCompatActivity() {
             getCurrentLocationWithPermission()
         }
     }
-
-
 }
