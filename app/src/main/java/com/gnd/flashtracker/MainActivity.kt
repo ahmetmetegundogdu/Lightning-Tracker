@@ -1,13 +1,9 @@
 package com.gnd.flashtracker
 
 import android.Manifest
-import android.content.BroadcastReceiver
-import android.content.Context
+import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.location.Geocoder
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -28,16 +24,9 @@ import com.google.android.gms.location.LocationServices
 import androidx.core.view.WindowInsetsCompat
 import coil.load
 import com.google.android.gms.location.Priority
-
-import com.google.android.gms.maps.model.LatLng
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.util.Locale
-import kotlin.properties.Delegates
-
 
 class MainActivity : AppCompatActivity() {
     lateinit var locationSpinner: Spinner
@@ -45,11 +34,11 @@ class MainActivity : AppCompatActivity() {
     lateinit var inputRange: EditText
     lateinit var findButton: Button
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    lateinit var coordinates_list: MutableList<Int>
+    lateinit var coordinatesList: MutableList<Int>
     lateinit var weatherInfoText: TextView
     lateinit var degreeText: TextView
     lateinit var weatherIcon: ImageView
-    lateinit var location_info: TextView
+    lateinit var locationInfo: TextView
 
     // sonra düzeltcem
     //düzelt sikmim
@@ -61,7 +50,7 @@ class MainActivity : AppCompatActivity() {
     val key="8a914d5718194ad0b2d172949261102"
     //
 
-    var location_list=listOf("Current Location","Ankara","Istanbul","Izmir","Samsun","All lightning events on the world.")//0,1,2,3,4
+    var locationList=listOf("Current Location","Ankara","Istanbul","Izmir","Samsun","All lightning events on the world.")//0,1,2,3,4
     override fun onCreate(savedInstanceState: Bundle?) {
 
 
@@ -78,22 +67,23 @@ class MainActivity : AppCompatActivity() {
 
         fusedLocationProviderClient= LocationServices.getFusedLocationProviderClient(this)
         var selectedItem:Int=-1
-        coordinates_list= mutableListOf()
+        coordinatesList= mutableListOf()
         inputRange=findViewById(R.id.input_range)
         findButton=findViewById(R.id.find_button)
         locationSpinner=findViewById(R.id.location_spinner)
-        locationSpinnerAdapter= ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item,location_list)
+        locationSpinnerAdapter= ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item,locationList)
         locationSpinner.adapter=locationSpinnerAdapter
         weatherIcon=findViewById(R.id.weatherIcon)
         weatherInfoText=findViewById(R.id.weatherInfo)
         degreeText=findViewById(R.id.degreeText)
-        location_info=findViewById(R.id.location_info)
+        locationInfo=findViewById(R.id.location_info)
         getCurrentLocationWithPermission()
 
         val serviceIntent = Intent(this, WebSocketService::class.java)
         startService(serviceIntent)
 
         locationSpinner.onItemSelectedListener=object : AdapterView.OnItemSelectedListener{
+            @SuppressLint("SetTextI18n")
             override fun onItemSelected(
                 parent: AdapterView<*>?,
                 view: View?,
@@ -103,11 +93,11 @@ class MainActivity : AppCompatActivity() {
                 selectedItem=position
                 if (position==5){
                     inputRange.visibility= View.GONE
-                    findButton.setText("Detect Strikes")
+                    findButton.text = "Detect Strikes"
 
                 }else{
                     inputRange.visibility= View.VISIBLE
-                    findButton.setText("Detect Strikes")
+                    findButton.text = "Detect Strikes"
 
 
                 }
@@ -135,7 +125,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun getAllFlashes(){
-        val intent= Intent(this, ligthnings_RV::class.java)
+        val intent= Intent(this, LightningsRV::class.java)
         val listAllFlashes=true
         intent.putExtra("listAllFlashes",listAllFlashes)
         startActivity(intent)
@@ -150,8 +140,8 @@ class MainActivity : AppCompatActivity() {
             if(location!=null){
                 Log.d("Bilgi mesajı:","Konum başarıylı aldı.")
 
-                val lat=location.latitude.toDouble()
-                val lng=location.longitude.toDouble()
+                val lat=location.latitude
+                val lng=location.longitude
                 latitude=lat
                 longitude=lng
                 setWeather()
@@ -166,8 +156,8 @@ class MainActivity : AppCompatActivity() {
                         Log.d("Bilgi mesajı:","Konum başarıylı aldı.")
 
                         Toast.makeText(this,"Güncel konum alınıyor", Toast.LENGTH_LONG).show()
-                        val lat=location.latitude.toDouble()
-                        val lng=location.longitude.toDouble()
+                        val lat=location.latitude
+                        val lng=location.longitude
                         latitude=lat
                         longitude=lng
                         setWeather()
@@ -185,6 +175,7 @@ class MainActivity : AppCompatActivity() {
         val query="$latitude,$longitude"
         val call=service.getCityWeather(key,query)
         call.enqueue(object : Callback<WeatherResponse>{
+            @SuppressLint("SetTextI18n")
             override fun onResponse(
                 call: Call<WeatherResponse?>,
                 response: Response<WeatherResponse?>
@@ -192,15 +183,15 @@ class MainActivity : AppCompatActivity() {
                 if(response.isSuccessful){
                     val weather=response.body()
                     Log.d("Weather Info:","${weather?.current?.condition?.text}")
-                    degreeText.setText(weather?.current?.temp_c.toString()+"°C")
-                    weatherInfoText.setText(weather?.current?.condition?.text)
+                    degreeText.text = weather?.current?.tempC.toString()+"°C"
+                    weatherInfoText.text = weather?.current?.condition?.text
                     val imageUrl="https://"+weather?.current?.condition?.icon
                     weatherIcon.load(imageUrl){
                         crossfade(true)
                         placeholder(R.drawable.loading)
                     }
                     val location=weather?.location?.name+"\n"+weather?.location?.country
-                    location_info.setText(location)
+                    locationInfo.text = location
                 }
             }
 
@@ -215,7 +206,7 @@ class MainActivity : AppCompatActivity() {
 
     }
     fun sendToIntent(lat: Double, lng: Double){
-        val intent= Intent(this, ligthnings_RV::class.java)
+        val intent= Intent(this, LightningsRV::class.java)
         intent.putExtra("latitude",lat)
         intent.putExtra("longitude",lng)
         val range=inputRange.text.toString()

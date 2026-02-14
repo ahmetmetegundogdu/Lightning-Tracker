@@ -14,8 +14,7 @@ import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 
-public var newCon = true
-
+var newCon = true
 
 class WebSocketService : Service() {
     private var socket: WebSocket? = null
@@ -29,9 +28,6 @@ class WebSocketService : Service() {
         super.onCreate()
         connect()
         Log.d("zamazingo", "dkjldfjfgjlşgklhkifşlfi")
-    }
-    override fun onDestroy() {
-        super.onDestroy()
     }
 
     fun connect(){
@@ -75,10 +71,6 @@ class WebSocketService : Service() {
         }
 
         socket = client.newWebSocket(request, listener)
-    }
-
-    fun sendMessage(msg: String) {
-        socket?.send(msg)
     }
 
     private fun onMessageReceived(message: String) {

@@ -4,7 +4,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object WeatherClient {
-    val service= Retrofit.Builder()
+    val service: WeatherApi = Retrofit.Builder()
         .baseUrl("https://api.weatherapi.com/v1/")
         .addConverterFactory(GsonConverterFactory.create())
         .build()

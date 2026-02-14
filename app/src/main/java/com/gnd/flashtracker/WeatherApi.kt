@@ -8,8 +8,8 @@ data class WeatherResponse(
     val location:LocationData,
     val current:CurrentData
 )
-data class LocationData(val name: String,val country: String,val tz_id: String)
-data class CurrentData(val temp_c: Double, val condition:WeatherCondition)
+data class LocationData(val name: String,val country: String,val tzId: String)
+data class CurrentData(val tempC: Double, val condition:WeatherCondition)
 data class WeatherCondition(val text: String,val icon: String)
 
 interface WeatherApi {
