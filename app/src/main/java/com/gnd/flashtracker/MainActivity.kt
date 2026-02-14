@@ -180,11 +180,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
     fun setWeather(){
-        val retrofit= Retrofit.Builder()
-            .baseUrl("https://api.weatherapi.com/v1/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        val service=retrofit.create(WeatherApi::class.java)
+        val service= WeatherClient.service
 
         val query="$latitude,$longitude"
         val call=service.getCityWeather(key,query)

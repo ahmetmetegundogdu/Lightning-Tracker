@@ -64,11 +64,11 @@
             android:id="@+id/location_spinner"
             android:layout_width="200dp"
             android:layout_height="50dp"
-            android:background="@drawable/transparent_bg"
             android:layout_marginBottom="50dp"
-            android:textColor="#353538"
-
-            />
+            android:background="@drawable/transparent_bg"
+            android:focusable="true"
+            android:popupBackground="@drawable/background"
+            android:spinnerMode="dialog" />
 
         <EditText
             android:id="@+id/input_range"

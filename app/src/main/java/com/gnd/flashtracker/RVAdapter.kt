@@ -6,6 +6,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Locale
+import android.content.Context
+import android.location.Geocoder
+import android.util.Log
 
 class RVAdapter(var itemList: MutableList<Data>, val listAllFlashes: Boolean, private val onItemClick:(Data)-> Unit): RecyclerView.Adapter<RVAdapter.RVViewHolder>() {
     override fun onCreateViewHolder(
@@ -26,15 +29,20 @@ class RVAdapter(var itemList: MutableList<Data>, val listAllFlashes: Boolean, pr
 
         if(!listAllFlashes){
 
-            holder.rvLatitude.setText("Lightning detected "+"%.2f".format(Locale.US, currentData.distance) + " km away.")
+            val region=getAddress(holder.itemView.context,currentData.latitude.toDouble(),currentData.longitude.toDouble())
+            holder.rvAddress.setText("Address: $region ")
+
+            holder.rvDistance.setText("Distance: "+"%.2f".format(Locale.US, currentData.distance) + " km")
 
         }else{
 
-            holder.rvLatitude.setText("Lightning detected \nLat: %.4f \nLon: %.4f".format(
+            val region=getAddress(holder.itemView.context,currentData.latitude.toDouble(),currentData.longitude.toDouble())
+            holder.rvAddress.setText("Address: $region ")
+
+            holder.rvDistance.setText("Lat: %.4f  Lon: %.4f".format(
                 currentData.latitude.toDouble(),
                 currentData.longitude.toDouble())
             )
-
         }
         holder.itemView.setOnClickListener { onItemClick(currentData) }
     }
@@ -44,6 +52,39 @@ class RVAdapter(var itemList: MutableList<Data>, val listAllFlashes: Boolean, pr
     }
 
     class RVViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
-        val rvLatitude: TextView=itemView.findViewById(R.id.distanceView)
+        val rvDistance: TextView=itemView.findViewById(R.id.distanceView)
+        val rvAddress:TextView=itemView.findViewById(R.id.addressView)
+
+    }
+
+    fun getAddress(context: Context,lat: Double,lon: Double): String {
+        val geocoder= Geocoder(context, Locale.ENGLISH)
+        try {
+            val addressList=geocoder.getFromLocation(lat,lon,1)
+            if(!addressList.isNullOrEmpty()){
+                val address=addressList[0]
+                val x=address.getAddressLine(0)
+                val cityName=address.adminArea
+                val townName=address.subAdminArea
+                val addressInfo=cityName+"/"+townName
+                return x
+            }else{
+                val region = when {
+                    (lat in 40.0..47.0) && (lon in 27.0..42.0) -> "Black Sea"
+                    (lat in 30.0..46.0) && (lon in -6.0..36.0) -> "Mediterranean Sea"
+                    (lat in -66.0..66.0) && (lon >= 120.0 || lon <= -80.0) -> "Pacific Ocean"
+                    (lat in -60.0..70.0) && (lon in -70.0..20.0) -> "Atlantic Ocean"
+                    (lat in -60.0..25.0) && (lon in 20.0..120.0) -> "Indian Ocean"
+                    (lat in -90.0..-60.0) -> "Southern Ocean"
+                    (lat in 60.0..90.0) -> "Arctic Ocean"
+                    else -> "Land or Other Water Body"
+                }
+                return region
+            }
+        }catch(e: Exception) {
+            Log.d("Error:",e.toString())
+
+        }
+        return ""
     }
 }

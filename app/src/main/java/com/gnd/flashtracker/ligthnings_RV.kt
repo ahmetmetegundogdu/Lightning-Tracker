@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.location.Geocoder
+import android.media.Image
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -15,23 +16,38 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import android.os.Handler
+import android.os.Looper
+import android.view.View
 import android.view.WindowManager
+import android.widget.ImageView
 import androidx.activity.addCallback
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
+import okhttp3.*
 import org.json.JSONObject
+import org.w3c.dom.Text
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Retrofit
 import java.util.Locale
 import kotlin.math.pow
 
 class ligthnings_RV : AppCompatActivity() {
 
-    lateinit var latitudeText: TextView
-    lateinit var longitudeText: TextView
+    private lateinit var headerWeatherIc: ImageView
+    private lateinit var headerAddress: TextView
+    private lateinit var headerWeaInfo: TextView
+    private lateinit var headerDegree:TextView
     private var firstCon: Boolean = true
     private lateinit var recyclerView: RecyclerView
     private var range: Int = 1000000
     private var listAllFlashes: Boolean= true
     private lateinit var dataList: MutableList<Data>
+
+    val key="8a914d5718194ad0b2d172949261102"
 
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
@@ -46,10 +62,55 @@ class ligthnings_RV : AppCompatActivity() {
             insets
         }
 
+        var service= WeatherClient.service
+        headerAddress=findViewById(R.id.headerAddress)
+        headerWeatherIc=findViewById(R.id.headerWeatherIc)
+        headerDegree=findViewById(R.id.headerDegree)
+        headerWeaInfo=findViewById(R.id.headerWeatherInfo)
+
         recyclerView=findViewById(R.id.recyclerview)
         recyclerView.layoutManager= LinearLayoutManager(this)
         range= intent.getIntExtra("range",1000000)
         listAllFlashes=intent.getBooleanExtra("listAllFlashes",false)
+
+        if(!listAllFlashes){
+            val latitude=intent.getDoubleExtra("latitude",0.0)
+            val longitude=intent.getDoubleExtra("longitude",0.0)
+            val location=getAddress(this,latitude,longitude)
+            headerAddress.setText(location)
+            val query="$latitude,$longitude"
+            val call=service.getCityWeather(key,query)
+            call.enqueue(object : Callback<WeatherResponse> {
+                override fun onResponse(
+                    call: retrofit2.Call<WeatherResponse?>,
+                    response: retrofit2.Response<WeatherResponse?>
+                ) {
+                    if(response.isSuccessful){
+                        val weather=response.body()
+                        Log.d("Weather Info:","${weather?.current?.condition?.text}")
+                        //degreeText.setText(weather?.current?.temp_c.toString()+"°C")
+                        val imageUrl="https://"+weather?.current?.condition?.icon
+                        headerWeatherIc.load(imageUrl){
+                            crossfade(true)
+                            placeholder(R.drawable.loading)
+                        }
+                        headerDegree.setText(weather?.current?.temp_c.toString()+"°C")
+                        headerWeaInfo.setText(weather?.current?.condition?.text)
+                    }
+                }
+
+                override fun onFailure(
+                    call: Call<WeatherResponse?>,
+                    t: Throwable
+                ) {
+                    Log.d("HATA:",t.toString())
+                }
+
+            })
+        }else{
+            headerWeatherIc.visibility= View.INVISIBLE
+            headerAddress.setText("All Lightning Events On The World")
+        }
 
         dataList=mutableListOf()
         val adapter= RVAdapter(dataList,listAllFlashes){data ->
@@ -278,7 +339,7 @@ class ligthnings_RV : AppCompatActivity() {
     fun getAddress(context: Context,latitude: Double,longitude: Double): String {
         val geocoder= Geocoder(context, Locale.ENGLISH)
         try {
-            val addressList=geocoder.getFromLocation(latitude,longitude,5)
+            val addressList=geocoder.getFromLocation(latitude,longitude,2)
             if(!addressList.isNullOrEmpty()){
                 val address=addressList[0]
                 val x=address.getAddressLine(0)
