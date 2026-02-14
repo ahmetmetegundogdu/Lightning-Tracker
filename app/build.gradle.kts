@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    // Kotlin 2.0+ kullanıyorsan bu şart:
     id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
 
 }
@@ -44,10 +45,6 @@ dependencies {
     val composeBom = platform("androidx.compose:compose-bom:2025.10.00") // Güncel BOM sürümünü kontrol et
     implementation(composeBom)
     androidTestImplementation(composeBom)
-    //Hava durumu için
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("io.coil-kt:coil:2.5.0")//Fotolar için
 
     // Temel Kütüphaneler
     implementation("androidx.compose.ui:ui")

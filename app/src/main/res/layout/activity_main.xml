@@ -1,108 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:background="@drawable/main_background">
-    <TextView
+    android:background="@color/freeze_white">
+
+    <Spinner
+        android:id="@+id/location_spinner"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:background="@drawable/specialedittext"
+        android:layout_marginBottom="50dp"
+         />
+    <EditText
+        android:id="@+id/input_range"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:hint="Enter range"
+        android:text="100"
+        android:background="@drawable/specialedittext"
+        android:layout_marginBottom="30dp"/>
+    <Button
+        android:id="@+id/find_button"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:id="@+id/location_info"
-        android:textStyle="bold"
-        android:textSize="20sp"
+        android:layout_height="48dp"
+        android:minWidth="150dp"
+        android:background="@drawable/button_layout"
+        android:backgroundTint="@null"
+        android:text="Find lightnings"
+        android:textAllCaps="false"
         android:textColor="@color/freeze_white"
-        android:layout_marginLeft="30dp"
-        android:layout_marginTop="45dp"/>
-    <LinearLayout
-        android:orientation="vertical"
-        android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:layout_marginBottom="50dp">
+        android:textSize="16sp"
+        android:gravity="center"/>
 
-            <ImageView
-                android:id="@+id/weatherIcon"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                />
-            <TextView
-                android:id="@+id/degreeText"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:textSize="35sp"
-                android:textColor="@color/freeze_white"
-                android:textStyle="bold"
-                android:text=""
-                />
-            <TextView
-                android:id="@+id/weatherInfo"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:textSize="15sp"
-                android:textColor="@color/freeze_white"
-                android:textStyle="bold"
-                android:text="Getting info..."
-                />
-
-
-
-        </LinearLayout>
-
-        <Spinner
-            android:id="@+id/location_spinner"
-            android:layout_width="200dp"
-            android:layout_height="50dp"
-            android:layout_marginBottom="50dp"
-            android:background="@drawable/transparent_bg"
-
-            android:focusable="true"
-            android:popupBackground="@drawable/background"
-            android:spinnerMode="dialog" />
-
-        <EditText
-            android:id="@+id/input_range"
-            android:layout_width="200dp"
-            android:layout_height="50dp"
-            android:layout_marginBottom="30dp"
-            android:textColor="#353538"
-            android:textColorHint="#68686B"
-            android:background="@drawable/transparent_bg"
-            android:hint="Enter range (km)"
-            android:inputType="number" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/find_button"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:background="@drawable/button_layout"
-            android:backgroundTint="@null"
-            android:gravity="center"
-            android:minWidth="150dp"
-            android:text="Detect strikes"
-            android:textAllCaps="false"
-            android:textColor="@color/freeze_white"
-            android:textSize="16sp" />
-
-
-    </LinearLayout>
-
-
-
-
-
-
-
-</RelativeLayout>
-
+</LinearLayout>
