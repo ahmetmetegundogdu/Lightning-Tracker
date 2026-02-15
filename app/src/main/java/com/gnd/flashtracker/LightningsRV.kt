@@ -28,6 +28,7 @@ import retrofit2.Callback
 import java.util.Locale
 import kotlin.math.pow
 import androidx.core.net.toUri
+import com.google.gson.internal.GsonBuildConfig
 import kotlin.math.asin
 import kotlin.math.cos
 import kotlin.math.sin
@@ -44,9 +45,7 @@ class LightningsRV : AppCompatActivity() {
     private var range: Int = 1000000
     private var listAllFlashes: Boolean= true
     private lateinit var dataList: MutableList<Data>
-
-    val key="8a914d5718194ad0b2d172949261102"
-
+    val key= BuildConfig.WEATHER_API_KEY
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,13 +86,12 @@ class LightningsRV : AppCompatActivity() {
                     if(response.isSuccessful){
                         val weather=response.body()
                         Log.d("Weather Info:","${weather?.current?.condition?.text}")
-                        //degreeText.setText(weather?.current?.temp_c.toString()+"°C")
                         val imageUrl="https://"+weather?.current?.condition?.icon
                         headerWeatherIc.load(imageUrl){
                             crossfade(true)
                             placeholder(R.drawable.loading)
                         }
-                        headerDegree.text = weather?.current?.tempC.toString()+"°C"
+                        headerDegree.text = weather?.current?.temp_c.toString()+"°C"
                         headerWeaInfo.text = weather?.current?.condition?.text
                     }
                 }

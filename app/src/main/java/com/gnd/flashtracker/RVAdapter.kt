@@ -73,30 +73,22 @@ class RVAdapter(private val scope: CoroutineScope,
     }
     suspend fun getAddress(context: Context, lat: Double, lon: Double): String {
 
-        // I/O thread'ine geçiş yap (Arka planda çalıştır)
         return withContext(Dispatchers.IO) {
             val geocoder = Geocoder(context, Locale.ENGLISH)
             var resultAddress: String
 
             try {
-                // Bu bloklayıcı işlem artık UI'ı dondurmaz
                 @Suppress("DEPRECATION") val addressList = geocoder.getFromLocation(lat, lon, 1)
 
                 if (!addressList.isNullOrEmpty()) {
                     val address = addressList[0]
-                    // index=0 genellikle tam adresi verir, garanti olsun diye kontrol edilebilir
                     resultAddress = address.getAddressLine(0) ?: "Bilinmeyen Konum"
-                } else {
-                    // Senin manuel fallback kodun buraya gelir
-                    resultAddress = getRegionFallback(lat, lon)
+                } else { resultAddress = getRegionFallback(lat, lon)
                 }
             } catch (e: Exception) {
                 Log.e("GeocoderError", e.toString())
-                // Hata durumunda da fallback çalışsın
                 resultAddress = getRegionFallback(lat, lon)
             }
-
-            // Sonucu döndür (return@withContext kullanımı)
             resultAddress
         }
     }

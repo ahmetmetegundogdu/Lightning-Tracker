@@ -17,6 +17,7 @@
         android:paddingHorizontal="30dp"
         >
         <TextView
+            android:textColor="#575353"
             android:id="@+id/headerAddress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

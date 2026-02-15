@@ -40,15 +40,10 @@ class MainActivity : AppCompatActivity() {
     lateinit var weatherIcon: ImageView
     lateinit var locationInfo: TextView
 
-    // sonra düzeltcem
-    //düzelt sikmim
     var latitude: Double=0.0
     var longitude: Double=0.0
 
-    // silmezsek ölürü!!!!!
-    // sil o zaman amk
-    val key="8a914d5718194ad0b2d172949261102"
-    //
+    val key= BuildConfig.WEATHER_API_KEY
 
     var locationList=listOf("Current Location","Ankara","Istanbul","Izmir","Samsun","All lightning events on the world.")//0,1,2,3,4
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -131,7 +126,6 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
     fun getCurrentLocationWithPermission(){
-        Log.d("Girdi","Grid")
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(this,arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),100)
             return
@@ -183,7 +177,8 @@ class MainActivity : AppCompatActivity() {
                 if(response.isSuccessful){
                     val weather=response.body()
                     Log.d("Weather Info:","${weather?.current?.condition?.text}")
-                    degreeText.text = weather?.current?.tempC.toString()+"°C"
+
+                    degreeText.text = weather?.current?.temp_c.toString()+"°C"
                     weatherInfoText.text = weather?.current?.condition?.text
                     val imageUrl="https://"+weather?.current?.condition?.icon
                     weatherIcon.load(imageUrl){
