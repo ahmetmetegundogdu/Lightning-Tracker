@@ -106,6 +106,8 @@ class LightningsRV : AppCompatActivity() {
             })
         }else{
             headerWeatherIc.visibility= View.INVISIBLE
+            headerWeaInfo.visibility= View.INVISIBLE
+            headerDegree.visibility= View.INVISIBLE
             headerAddress.text = "All Lightning Events On The World"
         }
 

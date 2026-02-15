@@ -2,9 +2,13 @@ package com.gnd.flashtracker
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
@@ -22,11 +26,13 @@ import androidx.core.view.ViewCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.widget.addTextChangedListener
 import coil.load
 import com.google.android.gms.location.Priority
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import kotlin.text.toInt
 
 class MainActivity : AppCompatActivity() {
     lateinit var locationSpinner: Spinner
@@ -201,13 +207,50 @@ class MainActivity : AppCompatActivity() {
 
     }
     fun sendToIntent(lat: Double, lng: Double){
+        var control=false
         val intent= Intent(this, LightningsRV::class.java)
         intent.putExtra("latitude",lat)
         intent.putExtra("longitude",lng)
-        val range=inputRange.text.toString()
-        val value = range.toIntOrNull() ?: 1000000
-        intent.putExtra("range",value)
-        startActivity(intent)
+        var value=inputRange.text.toString()
+        control=rangeControl(value)
+
+        if(control){
+            intent.putExtra("range",value.toInt())
+            startActivity(intent)
+
+        }
+        else{
+            vibrator(200)
+            Toast.makeText(this,"You entered an invalid value.Value must be > 10",Toast.LENGTH_LONG).show()
+        }
+    }
+    fun rangeControl(text: String): Boolean{
+        val range=text.toString()
+        if(!range.isNullOrEmpty()&&valueControl(range)){
+            return true
+        }else{
+            return false
+
+        }
+    }
+    fun valueControl(value:String): Boolean{
+       val range=value.toInt()
+        if(range<10){
+            return false
+
+        }else{
+            return true
+        }
+    }
+    private fun vibrator(time: Long = 200) {
+        val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(time, VibrationEffect.DEFAULT_AMPLITUDE))
+        } else {
+            @Suppress("DEPRECATION")
+            vibrator.vibrate(time)
+        }
     }
 
     override fun onRequestPermissionsResult(

@@ -14,7 +14,7 @@
 
         android:background="@drawable/events_header"
         android:gravity="center"
-        android:paddingHorizontal="30dp"
+        android:paddingHorizontal="19dp"
         >
         <TextView
             android:textColor="#575353"
@@ -30,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="center"
+            android:gravity="right"
             android:orientation="vertical"
             >
             <TextView
@@ -38,6 +38,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/headerDegree"
                 android:textSize="12sp"
+                android:textColor="#575353"
+
                 android:text="Info"/>
             <ImageView
                 android:id="@+id/headerWeatherIc"
@@ -49,6 +51,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/headerWeatherInfo"
+                android:textColor="#575353"
+
                 android:textSize="12sp"
                 android:text="Info"/>
         </LinearLayout>
