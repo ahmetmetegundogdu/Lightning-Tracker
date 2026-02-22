@@ -37,7 +37,6 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 
 class LightningsRV : AppCompatActivity() {
-
     private lateinit var headerWeatherIc: ImageView
     private lateinit var headerAddress: TextView
     private lateinit var headerWeaInfo: TextView
@@ -107,7 +106,6 @@ class LightningsRV : AppCompatActivity() {
                 ) {
                     Log.d("HATA:",t.toString())
                 }
-
             })
         }else{
             headerWeatherIc.visibility= View.INVISIBLE
