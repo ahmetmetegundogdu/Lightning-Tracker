@@ -144,7 +144,6 @@ class LightningsRV : AppCompatActivity() {
                 val timeThreshold = intent.getBooleanExtra("timeThreshold",false)
                 val uniqueLightning = intent.getBooleanExtra("uniqueLightning",false)
 
-                Log.d("Websocket reconnect status:", "$newCon")
 
                 if (newCon && firstCon){
                     if (timeThreshold){
