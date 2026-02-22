@@ -171,6 +171,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
     fun setWeather(){
+
         val service= WeatherClient.service
 
         val query="$latitude,$longitude"
@@ -194,6 +195,8 @@ class MainActivity : AppCompatActivity() {
                     }
                     val location=weather?.location?.name+"\n"+weather?.location?.country
                     locationInfo.text = location
+                }else{
+                    Log.d("Hava durumu:","Bilgi alınamadı")
                 }
             }
 
