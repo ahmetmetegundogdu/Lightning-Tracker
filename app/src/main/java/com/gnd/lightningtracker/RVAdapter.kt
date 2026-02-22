@@ -1,4 +1,4 @@
-package com.gnd.flashtracker
+package com.gnd.lightningtracker
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
@@ -44,9 +44,9 @@ class RVAdapter(private val scope: CoroutineScope,
 
             scope.launch {
                 val region=getAddress(holder.itemView.context,currentData.latitude.toDouble(),currentData.longitude.toDouble())
-                holder.rvAddress.text = "Address: $region "
+                holder.rvAddress.text = "Address: $region"
                 if (holder.itemView.tag == currentPosition) {
-                    holder.rvAddress.text = region
+                    holder.rvAddress.text = "Address: $region"
                 }
             }
             holder.rvDistance.text = "Distance: "+"%.2f".format(Locale.US, currentData.distance) + " km"
@@ -57,7 +57,7 @@ class RVAdapter(private val scope: CoroutineScope,
                 val region=getAddress(holder.itemView.context,currentData.latitude.toDouble(),currentData.longitude.toDouble())
                 holder.rvAddress.text = "Address: $region "
                 if (holder.itemView.tag == currentPosition) {
-                    holder.rvAddress.text = region
+                    holder.rvAddress.text = "Address: $region"
                 }
             }
 

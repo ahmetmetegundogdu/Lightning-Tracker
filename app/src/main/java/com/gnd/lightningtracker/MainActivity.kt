@@ -1,4 +1,4 @@
-package com.gnd.flashtracker
+package com.gnd.lightningtracker
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -26,7 +26,6 @@ import androidx.core.view.ViewCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.widget.addTextChangedListener
 import coil.load
 import com.google.android.gms.location.Priority
 import retrofit2.Call
@@ -51,7 +50,7 @@ class MainActivity : AppCompatActivity() {
 
     val key= BuildConfig.WEATHER_API_KEY
 
-    var locationList=listOf("Current Location","Ankara","Istanbul","Izmir","Samsun","All lightning events on the world.")//0,1,2,3,4
+    var locationList=listOf("Current Location","Ankara","İstanbul","İzmir","Samsun","All lightning events on the world.")//0,1,2,3,4
     override fun onCreate(savedInstanceState: Bundle?) {
 
 
@@ -72,8 +71,10 @@ class MainActivity : AppCompatActivity() {
         inputRange=findViewById(R.id.input_range)
         findButton=findViewById(R.id.find_button)
         locationSpinner=findViewById(R.id.location_spinner)
-        locationSpinnerAdapter= ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item,locationList)
+        locationSpinnerAdapter= ArrayAdapter(this, R.layout.custom_spinner_item,locationList)
+        locationSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         locationSpinner.adapter=locationSpinnerAdapter
+
         weatherIcon=findViewById(R.id.weatherIcon)
         weatherInfoText=findViewById(R.id.weatherInfo)
         degreeText=findViewById(R.id.degreeText)
@@ -221,7 +222,7 @@ class MainActivity : AppCompatActivity() {
         }
         else{
             vibrator(200)
-            Toast.makeText(this,"You entered an invalid value.Value must be > 10",Toast.LENGTH_LONG).show()
+            Toast.makeText(this,"Range must be at least 10km",Toast.LENGTH_LONG).show()
         }
     }
     fun rangeControl(text: String): Boolean{
@@ -230,7 +231,6 @@ class MainActivity : AppCompatActivity() {
             return true
         }else{
             return false
-
         }
     }
     fun valueControl(value:String): Boolean{

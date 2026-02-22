@@ -1,4 +1,4 @@
-package com.gnd.flashtracker
+package com.gnd.lightningtracker
 
 import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
@@ -22,13 +22,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import java.util.Locale
 import kotlin.math.pow
 import androidx.core.net.toUri
-import com.google.gson.internal.GsonBuildConfig
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import retrofit2.Response
 import kotlin.math.asin
 import kotlin.math.cos
 import kotlin.math.sin
@@ -40,7 +42,6 @@ class LightningsRV : AppCompatActivity() {
     private lateinit var headerAddress: TextView
     private lateinit var headerWeaInfo: TextView
     private lateinit var headerDegree:TextView
-    private var firstCon: Boolean = true
     private lateinit var recyclerView: RecyclerView
     private var range: Int = 1000000
     private var listAllFlashes: Boolean= true
@@ -73,15 +74,20 @@ class LightningsRV : AppCompatActivity() {
         if(!listAllFlashes){
             val latitude=intent.getDoubleExtra("latitude",0.0)
             val longitude=intent.getDoubleExtra("longitude",0.0)
-            val location=getAddress(this,latitude,longitude)
-            headerAddress.text = location
+
+            headerAddress.text = "Loading..."
+            lifecycleScope.launch{
+                val location=getAddress(this@LightningsRV,latitude,longitude)
+                headerAddress.text = location
+            }
+
             val query="$latitude,$longitude"
             val call=service.getCityWeather(key,query)
             call.enqueue(object : Callback<WeatherResponse> {
                 @SuppressLint("SetTextI18n")
                 override fun onResponse(
                     call: Call<WeatherResponse?>,
-                    response: retrofit2.Response<WeatherResponse?>
+                    response: Response<WeatherResponse?>
                 ) {
                     if(response.isSuccessful){
                         val weather=response.body()
@@ -112,7 +118,7 @@ class LightningsRV : AppCompatActivity() {
         }
 
         dataList=mutableListOf()
-        val adapter= RVAdapter(lifecycleScope, dataList,listAllFlashes){data ->
+        val adapter= RVAdapter(lifecycleScope,dataList,listAllFlashes){data ->
             val lat=data.latitude
             val lon=data.longitude
             val label="Flash Point"
@@ -133,40 +139,38 @@ class LightningsRV : AppCompatActivity() {
         val receiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
 
-                val text = intent.getStringExtra("text") ?: ""
-                val currentTime = intent.getLongExtra("currentTime",0)
 
-                try {
-                    val decodedData = decode(text)
-                    val jsonObject = JSONObject(decodedData)
-                    val lat = jsonObject.optDouble("lat", 0.0)
-                    val lon = jsonObject.optDouble("lon", 0.0)
-                    val delay = jsonObject.optDouble("delay",-1.0)
-                    val time = jsonObject.optLong("time",0)
+                val lat = intent.getDoubleExtra("lat", 0.0)
+                val lon = intent.getDoubleExtra("lon", 0.0)
 
-                    Log.d("Websocket reconnect status:", "$newCon")
+                val timeThreshold = intent.getBooleanExtra("timeThreshold",false)
+                val uniqueLightning = intent.getBooleanExtra("uniqueLightning",false)
 
-                    val timeThreshold: Double = time - (delay * 1000000000)
-                    val isTimeValid: Boolean = currentTime <= timeThreshold
+                Log.d("Websocket reconnect status:", "$newCon")
 
-                    if (newCon && !isTimeValid) {
-                        if (firstCon) {
-                            // Kırmızı yazdır
-                            printOnScreen(lat, lon)
-                        }
+                if (newCon && firstCon){
+                    if (timeThreshold){
+                        printOnScreen(lat,lon)
                     }
-                    else {
-                        if (newCon) {
+                    else{
+                        newCon = false
+                        firstCon = false
+                        printOnScreen(lat,lon)
+                    }
+                }
+                else{
+                    if (newCon && uniqueLightning){
+                        if (newCon){
                             newCon = false
-                            firstCon = false
                         }
-                        // Mavi yazdır
-                        printOnScreen(lat, lon)
+                    }
+                    else{
+                        if (!newCon){
+                            printOnScreen(lat,lon)
+                        }
                     }
                 }
-                catch (_: Exception) {
-                    Log.e(":|", "program yarra yedi")
-                }
+
             }
         }
 
@@ -202,7 +206,7 @@ class LightningsRV : AppCompatActivity() {
                     }
                 }
             }else{
-                val data= Data(lat.toString(),lon.toString(),newCon)
+                val data= Data(lat.toString(),lon.toString(),newCon&&firstCon)
                 dataList.add(0, data)
                 recyclerView.adapter?.notifyItemInserted(0)
                 val layoutManager = recyclerView.layoutManager as LinearLayoutManager
@@ -213,24 +217,28 @@ class LightningsRV : AppCompatActivity() {
             }
         }
     }
-    fun getAddress(context: Context,latitude: Double,longitude: Double): String {
-        val geocoder= Geocoder(context, Locale.ENGLISH)
-        try {
-            @Suppress("DEPRECATION") val addressList=geocoder.getFromLocation(latitude,longitude,2)
-            if(!addressList.isNullOrEmpty()){
-                val address=addressList[0]
-                val cityName=address.adminArea
-                val townName=address.subAdminArea
-                val addressInfo= "$cityName/$townName"
-                return addressInfo
-            }else{
-                return "Address is not found"
+    suspend fun getAddress(context: Context,latitude: Double,longitude: Double): String {
+        return withContext(Dispatchers.IO) {
+            var result: String
+            val geocoder = Geocoder(context, Locale.ENGLISH)
+            try {
+                @Suppress("DEPRECATION") val addressList =
+                    geocoder.getFromLocation(latitude, longitude, 2)
+                if (!addressList.isNullOrEmpty()) {
+                    val address = addressList[0]
+                    val cityName = address.adminArea
+                    val townName = address.subAdminArea
+                    val addressInfo = "$cityName/$townName"
+                    result = addressInfo
+                } else {
+                    result = "Address is not found"
+                }
+            } catch (e: Exception) {
+                Log.d("Error:", e.toString())
+                result = "Cannot detect the address"
             }
-        }catch(e: Exception) {
-            Log.d("Error:",e.toString())
-
+            result
         }
-        return ""
     }
     private fun calculateDistance(lat: Double, lon: Double): Double{
         val r = 6371.0
@@ -253,40 +261,5 @@ class LightningsRV : AppCompatActivity() {
 
 
     }
-    private fun decode(input: String): String {
-        try {
-            if (input.isEmpty()) return ""
 
-            val dictionary = mutableMapOf<Int, String>()
-            val chars = input.toCharArray()
-            var c = chars[0].toString()
-            var f = c
-            val result = mutableListOf<String>()
-            result.add(c)
-
-            val h = 256
-            var o = h
-
-            var i = 1
-            while (i < chars.size) {
-                val a = chars[i].code
-                val entry = if (a < h) {
-                    chars[i].toString()
-                } else {
-                    dictionary[a] ?: (f + c)
-                }
-
-                result.add(entry)
-                c = entry[0].toString()
-                dictionary[o] = f + c
-                o++
-                f = entry
-                i++
-            }
-            return result.joinToString("")
-        } catch (e: Exception) {
-            Log.e("Decode", "Hata: ${e.message}")
-            return "{}"
-        }
-    }
 }

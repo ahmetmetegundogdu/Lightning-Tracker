@@ -1,4 +1,4 @@
-package com.gnd.flashtracker
+package com.gnd.lightningtracker
 
 import org.junit.Test
 

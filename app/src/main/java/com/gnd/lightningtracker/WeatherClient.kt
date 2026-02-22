@@ -1,4 +1,4 @@
-package com.gnd.flashtracker
+package com.gnd.lightningtracker
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

@@ -14,11 +14,11 @@ if (localPropertiesFile.exists()) {
 val weatherKey = localProperties.getProperty("WEATHER_API_KEY") ?: ""
 
 android {
-    namespace = "com.gnd.flashtracker"
+    namespace = "com.gnd.lightningtracker"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.gnd.flashtracker"
+        applicationId = "com.gnd.lightningtracker"
         minSdk = 23
         targetSdk = 36
         versionCode = 1

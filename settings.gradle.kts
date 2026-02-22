@@ -21,5 +21,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "flashTracker"
+rootProject.name = "LightningTracker"
 include(":app")
