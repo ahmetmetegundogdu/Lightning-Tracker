@@ -91,7 +91,6 @@ class LightningsRV : AppCompatActivity() {
                 ) {
                     if(response.isSuccessful){
                         val weather=response.body()
-                        Log.d("Weather Info:","${weather?.current?.condition?.text}")
                         val imageUrl="https://"+weather?.current?.condition?.icon
                         headerWeatherIc.load(imageUrl){
                             crossfade(true)
@@ -134,7 +133,6 @@ class LightningsRV : AppCompatActivity() {
 
         recyclerView.adapter=adapter
         recyclerView.itemAnimator = SlideInItemAnimator()
-        Log.d("Info","RecyclerView kuruldu.")
 
         val receiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
@@ -190,11 +188,8 @@ class LightningsRV : AppCompatActivity() {
 
     fun printOnScreen(lat: Double, lon: Double){
         runOnUiThread {
-            Log.d("WebSocket", "Yıldırım Düştü: $lat, $lon")
             if(!listAllFlashes){
                 val distance=calculateDistance(lat,lon)
-                Log.d("Distance:",distance.toString())
-                Log.d("Range:",range.toString())
                 if(range.toDouble()>=distance){
                     val data= Data(lat.toString(),lon.toString(),newCon&&firstCon,distance)
                     dataList.add(0, data)
@@ -234,7 +229,6 @@ class LightningsRV : AppCompatActivity() {
                     result = "Address is not found"
                 }
             } catch (e: Exception) {
-                Log.d("Error:", e.toString())
                 result = "Cannot detect the address"
             }
             result

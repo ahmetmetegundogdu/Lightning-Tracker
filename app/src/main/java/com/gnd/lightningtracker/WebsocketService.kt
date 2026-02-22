@@ -31,7 +31,6 @@ class WebSocketService : Service() {
     override fun onCreate() {
         super.onCreate()
         connect()
-        Log.d("zamazingo", "dkjldfjfgjlşgklhkifşlfi")
     }
 
     fun connect(){
@@ -45,7 +44,6 @@ class WebSocketService : Service() {
 
         val listener = object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
-                Log.d("WebSocket", "Bağlandı!")
                 webSocket.send("""{"a":111}""")
                 currentTime = System.currentTimeMillis()*1000000
                 newCon = true
@@ -54,14 +52,12 @@ class WebSocketService : Service() {
 
             @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
             override fun onMessage(webSocket: WebSocket, text: String) {
-                Log.d("websocket", "mesage received")
                 val data = decode(text)
                 val jsonObject = JSONObject(data)
                 onMessageReceived(jsonObject)
             }
 
             override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
-                Log.d("WebSocket", "Kapanıyor: $code")
 
                 previousLastItem = lastItem
 
@@ -132,7 +128,6 @@ class WebSocketService : Service() {
             }
             return result.joinToString("")
         } catch (e: Exception) {
-            Log.e("Decode", "Hata: ${e.message}")
             return "{}"
         }
     }

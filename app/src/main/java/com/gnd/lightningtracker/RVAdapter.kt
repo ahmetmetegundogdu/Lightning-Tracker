@@ -86,7 +86,6 @@ class RVAdapter(private val scope: CoroutineScope,
                 } else { resultAddress = getRegionFallback(lat, lon)
                 }
             } catch (e: Exception) {
-                Log.e("GeocoderError", e.toString())
                 resultAddress = getRegionFallback(lat, lon)
             }
             resultAddress

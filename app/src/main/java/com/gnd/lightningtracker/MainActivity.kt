@@ -9,7 +9,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -139,22 +138,18 @@ class MainActivity : AppCompatActivity() {
         }
         fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
             if(location!=null){
-                Log.d("Bilgi mesajı:","Konum başarıylı aldı.")
 
                 val lat=location.latitude
                 val lng=location.longitude
                 latitude=lat
                 longitude=lng
                 setWeather()
-                Log.d("Bilgi mesajı:","Konum başarıylı aldı.")
-
 
             }
             else{
                 Toast.makeText(this,"Konum bilgisi alınamadı. Tekrar deneyin.", Toast.LENGTH_LONG).show()
                 fusedLocationProviderClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY,null).addOnSuccessListener {location->
                     if(location!=null){
-                        Log.d("Bilgi mesajı:","Konum başarıylı aldı.")
 
                         Toast.makeText(this,"Güncel konum alınıyor", Toast.LENGTH_LONG).show()
                         val lat=location.latitude
@@ -162,7 +157,6 @@ class MainActivity : AppCompatActivity() {
                         latitude=lat
                         longitude=lng
                         setWeather()
-                        Log.d("Bilgi mesajı:","Konum başarıylı aldı.")
 
                     }
                 }
@@ -184,7 +178,6 @@ class MainActivity : AppCompatActivity() {
             ) {
                 if(response.isSuccessful){
                     val weather=response.body()
-                    Log.d("Weather Info:","${weather?.current?.condition?.text}")
 
                     degreeText.text = weather?.current?.temp_c.toString()+"°C"
                     weatherInfoText.text = weather?.current?.condition?.text
@@ -195,8 +188,6 @@ class MainActivity : AppCompatActivity() {
                     }
                     val location=weather?.location?.name+"\n"+weather?.location?.country
                     locationInfo.text = location
-                }else{
-                    Log.d("Hava durumu:","Bilgi alınamadı")
                 }
             }
 
@@ -204,7 +195,6 @@ class MainActivity : AppCompatActivity() {
                 call: Call<WeatherResponse?>,
                 t: Throwable
             ) {
-                Log.d("HATA:",t.toString())
             }
 
         })
