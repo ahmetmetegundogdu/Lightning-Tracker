@@ -15,6 +15,7 @@ Bu proje, modern Android geliştirme standartlarına uygun olarak inşa edilmiş
 
 * **Dil:** Kotlin
 * **Harita Servisi:** Google Maps API
+* * **Hava Durumu Servisi:** WeatherAPI
 * **Ağ Bağlantısı & WebSocket:** OkHttpClient
 * **Asenkron İşlemler:** Coroutines
 * **Arayüz Bileşenleri:** RecyclerView, ViewBinding / DataBinding
